@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -9,16 +10,22 @@ android {
 
     defaultConfig {
         applicationId "com.ninaad.gitcommits"
-        minSdkVersion 16
+        minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+
+        debug {
+            buildConfigField "String", 'BASE_URL', '"https://api.github.com/"'
+        }
+
         release {
+            buildConfigField "String", 'BASE_URL', '"https://api.github.com/"'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -30,16 +37,59 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    buildFeatures {
+        viewBinding true
+        dataBinding true
+    }
 }
 
 dependencies {
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+
+    // Lifecycle dependencies
+    implementation "androidx.lifecycle:lifecycle-common:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}"
+
+    // Dagger dependencies
+    implementation "com.google.dagger:dagger:${versions.dagger}"
+    kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
+    kapt "com.google.dagger:dagger-android:${versions.dagger}"
+    kapt "com.google.dagger:dagger-android-processor:${versions.dagger}"
+    implementation "com.google.dagger:dagger-android-support:${versions.dagger}"
+
+    // Coroutines dependency
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
+
+    // Retrofit dependencies
+    implementation "com.squareup.retrofit2:retrofit:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:converter-gson:${versions.retrofit}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
+
+    // Timber dependency for logging
+    implementation "com.jakewharton.timber:timber:${versions.timber}"
+
+    // Glide dependency for showing Images
+    implementation "com.github.bumptech.glide:glide:${versions.glide}"
+    annotationProcessor "com.github.bumptech.glide:compiler:${versions.glide}"
+
+    // enabling multidex support
+    implementation "androidx.multidex:multidex:${versions.multidex}"
+
+    // ViewModels dependency
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.viewmodel}"
 }

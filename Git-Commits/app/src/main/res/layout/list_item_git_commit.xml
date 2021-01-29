@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="gitentry"
+            type="com.ninaad.gitcommits.model.GitResponseItem"/>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bordered_view"
+        android:padding="@dimen/V10dip">
+
+        <TextView android:id="@+id/commit_hash_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{gitentry.hash}"
+            android:textSize="@dimen/V18sp"
+            android:textColor="@color/dark_gray"
+            android:textStyle="bold"
+            />
+
+        <TextView android:id="@+id/commit_message_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{gitentry.commit.message}"
+            android:textSize="@dimen/V16sp"
+            android:textColor="@color/git_font_gray"
+            android:layout_below="@+id/commit_hash_tv"/>
+
+        <TextView android:id="@+id/pull_date_updated_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{`Authored by ` + gitentry.commit.author.name}"
+            android:textSize="@dimen/V16sp"
+            android:textColor="@color/git_font_gray"
+            android:layout_below="@+id/commit_message_tv"/>
+
+    </RelativeLayout>
+</layout>
