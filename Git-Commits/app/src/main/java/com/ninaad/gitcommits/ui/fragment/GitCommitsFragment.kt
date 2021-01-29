@@ -7,17 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ninaad.gitcommits.R
 import com.ninaad.gitcommits.databinding.FragmentGitCommitsBinding
+import com.ninaad.gitcommits.repository.GitCommitsRepository
 import com.ninaad.gitcommits.ui.adapter.GitCommitsListAdapter
 import com.ninaad.gitcommits.viewmodel.GitCommitsViewModel
 import dagger.android.support.DaggerFragment
+import timber.log.Timber
 
 class GitCommitsFragment: DaggerFragment() {
 
     lateinit var viewModel: GitCommitsViewModel
+
+    lateinit var repository: GitCommitsRepository
 
     private lateinit var gitCommitsListBinding: FragmentGitCommitsBinding
 
@@ -32,12 +37,20 @@ class GitCommitsFragment: DaggerFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        viewModel = ViewModelProvider(this).get(GitCommitsViewModel::class.java)
+        repository = GitCommitsRepository()
+        viewModel = ViewModelProvider(this, GitCommitsViewModel.FACTORY(repository)).get(GitCommitsViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpList()
+        viewModel.commitsList.observe(viewLifecycleOwner) {
+            list ->
+            Timber.i("called list result")
+            (gitCommitsListBinding.gitCommitsListRv.adapter as GitCommitsListAdapter).setPullRequestsList(list)
+        }
+
+        viewModel.getGitCommitsList()
     }
 
     private fun setUpList() {
@@ -52,7 +65,6 @@ class GitCommitsFragment: DaggerFragment() {
                     setDrawable(it)
                 }
             })
-            (adapter as GitCommitsListAdapter).setPullRequestsList(emptyList())
         }
     }
 }

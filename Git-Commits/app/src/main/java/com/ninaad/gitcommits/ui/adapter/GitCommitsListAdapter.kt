@@ -13,7 +13,7 @@ import com.ninaad.gitcommits.model.GitResponseItem
  * Created by ninaad on 2/25/19.
  */
 class GitCommitsListAdapter : RecyclerView.Adapter<GitCommitsListAdapter.GitCommitsListViewHolder?>() {
-    lateinit var gitCommitEntryList: List<GitResponseItem>
+    private var gitCommitEntryList: List<GitResponseItem> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GitCommitsListViewHolder {
         val binding: ListItemGitCommitBinding = DataBindingUtil.inflate(
@@ -25,7 +25,7 @@ class GitCommitsListAdapter : RecyclerView.Adapter<GitCommitsListAdapter.GitComm
 
     override fun onBindViewHolder(holder: GitCommitsListViewHolder, i: Int) {
         holder.binding.gitentry = gitCommitEntryList[i]
-        holder.binding.executePendingBindings()
+//        holder.binding.executePendingBindings()
     }
 
     override fun getItemCount(): Int {
@@ -34,6 +34,7 @@ class GitCommitsListAdapter : RecyclerView.Adapter<GitCommitsListAdapter.GitComm
 
     fun setPullRequestsList(gitCommitsList: List<GitResponseItem>) {
         gitCommitEntryList = gitCommitsList
+        notifyDataSetChanged()
     }
 
     inner class GitCommitsListViewHolder(

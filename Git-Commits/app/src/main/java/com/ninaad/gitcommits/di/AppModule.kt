@@ -7,6 +7,7 @@ import com.ninaad.gitcommits.BuildConfig
 import com.ninaad.gitcommits.R
 import com.ninaad.gitcommits.api.GitHubAPI
 import com.ninaad.gitcommits.application.GitApplication
+import com.ninaad.gitcommits.repository.GitCommitsRepository
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -45,6 +46,12 @@ class AppModule {
                 .client(client)
                 .build()
                 .create(GitHubAPI::class.java)
+        }
+
+        @Singleton
+        @Provides
+        fun provideGitHubRepository() : GitCommitsRepository {
+            return GitCommitsRepository()
         }
 
         @Singleton
