@@ -50,12 +50,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/V10dip"
+            android:layout_below="@+id/separator_v"
             android:text="@{`Commit Hash : ` + gitentry.hash}"
             android:textSize="@dimen/V16sp"
             android:textColor="@color/dark_gray"
-            android:textStyle="italic"
-            android:layout_below="@+id/separator_v" />
-
+            android:textStyle="italic" />
 
         <TextView android:id="@+id/commit_message_tv"
             android:layout_width="match_parent"
@@ -68,6 +67,17 @@
             android:textSize="@dimen/V18sp"
             android:textColor="@color/git_font_gray"
             android:background="@color/lightest_gray"/>
+
+        <TextView android:id="@+id/commit_date_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/commit_message_tv"
+            android:layout_marginTop="@dimen/V10dip"
+            android:gravity="end"
+            android:textSize="@dimen/V14sp"
+            android:textColor="@color/dark_gray"
+            android:textStyle="italic" />
+
 
 
     </RelativeLayout>

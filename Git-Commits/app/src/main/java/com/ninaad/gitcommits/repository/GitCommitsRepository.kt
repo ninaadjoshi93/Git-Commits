@@ -2,7 +2,6 @@ package com.ninaad.gitcommits.repository
 
 import com.ninaad.gitcommits.api.GitHubAPI
 import com.ninaad.gitcommits.model.GitResponseItem
-import com.ninaad.gitcommits.util.NetworkUtil
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 import javax.inject.Singleton

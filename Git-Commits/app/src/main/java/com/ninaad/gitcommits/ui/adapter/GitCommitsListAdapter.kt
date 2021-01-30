@@ -8,13 +8,22 @@ import com.ninaad.gitcommits.R
 import com.ninaad.gitcommits.databinding.ListItemGitCommitBinding
 import com.ninaad.gitcommits.model.GitResponseItem
 import com.squareup.picasso.Picasso
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 /**
  * Created by ninaad on 2/25/19.
  */
 class GitCommitsListAdapter : RecyclerView.Adapter<GitCommitsListAdapter.GitCommitsListViewHolder?>() {
+    private val dateFormatter: SimpleDateFormat
+    private val parser: SimpleDateFormat
     private var gitCommitEntryList: List<GitResponseItem> = emptyList()
-
+    init {
+        val fromPattern = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        val toPattern = "h:mm:ss a MM-dd-yyyy"
+        parser = SimpleDateFormat(fromPattern, Locale.getDefault())
+        dateFormatter = SimpleDateFormat(toPattern, Locale.getDefault())
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GitCommitsListViewHolder {
         val binding: ListItemGitCommitBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context), R.layout.list_item_git_commit,
@@ -32,6 +41,9 @@ class GitCommitsListAdapter : RecyclerView.Adapter<GitCommitsListAdapter.GitComm
                 .error(R.drawable.github_icon)
                 .into(holder.binding.authorAvatarIv)
         }
+        gitEntry?.commit?.author?.date?.let {
+            holder.binding.commitDateTv.text = dateFormatter.format(parser.parse(it))
+        }
     }
 
     override fun getItemCount(): Int {
@@ -47,5 +59,5 @@ class GitCommitsListAdapter : RecyclerView.Adapter<GitCommitsListAdapter.GitComm
 
     inner class GitCommitsListViewHolder(
         val binding: ListItemGitCommitBinding
-        ) : RecyclerView.ViewHolder(binding.root)
+    ) : RecyclerView.ViewHolder(binding.root)
 }
