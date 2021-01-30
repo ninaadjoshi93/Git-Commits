@@ -27,4 +27,5 @@
     <dimen name="fab_margin">16dip</dimen>
 
     <dimen name="divider_height">1dip</dimen>
+    <dimen name="V200dip">200dip</dimen>
 </resources>

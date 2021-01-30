@@ -8,27 +8,16 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="colorGitPrimary">#24292E</color>
-    <color name="colorGitPrimaryDark">#24292E</color>
-    <color name="colorGitAccent">#E9FDF2</color>
+    <color name="colorGitPrimary">#FF24292E</color>
+    <color name="colorGitPrimaryDark">#FF24292E</color>
+    <color name="colorGitAccent">#FFE9FDF2</color>
 
-    <color name="git_theme_dark_gray">#404448</color>
+    <color name="git_theme_dark_gray">#FF404448</color>
 
     <color name="translucent_white">#66FFFFFF</color>
     <color name="dark_gray">#333333</color>
     <color name="lightest_gray">#EEEEEEEE</color>
     <color name="light_gray">#DDDDDD</color>
     <color name="git_font_gray">#586069</color>
-    <!--Diff colors-->
-    <color name="diff_white">#FFFFFF</color>
-
-    <color name="diff_light_blue">#F1F8FF</color>
-    <color name="diff_light_green">#E6FFED</color>
-    <color name="diff_light_red">#FFEEF0</color>
-    <color name="diff_gray">#FAFBFC</color>
-    <color name="diff_light_orange">#FFE4B2</color>
-
-    <color name="diff_red">#CB2431</color>
-    <color name="diff_green">#2CBE4E</color>
 
 </resources>

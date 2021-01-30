@@ -1,123 +1,132 @@
 package com.ninaad.gitcommits.ui.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.ninaad.gitcommits.R
 import com.ninaad.gitcommits.databinding.FragmentLandingBinding
-import com.ninaad.gitcommits.repository.GitCommitsRepository
 import com.ninaad.gitcommits.viewmodel.GitCommitsViewModel
+import com.ninaad.gitcommits.viewmodel.ShowGitCommitsInterface
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
 class GitLandingFragment : DaggerFragment() {
 
+    @Inject
+    lateinit var viewModel: GitCommitsViewModel
 
     private lateinit var fragmentLandingBinding: FragmentLandingBinding
 
-    @Inject
-    lateinit var viewModel: GitCommitsViewModel
+    private lateinit var listener: ShowGitCommitsInterface
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         fragmentLandingBinding = FragmentLandingBinding.inflate(inflater)
         return fragmentLandingBinding.root
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        listener = context as ShowGitCommitsInterface
+        setupSnackBar()
+        setupButtons()
+    }
 
-        viewModel.snackbar.observe(viewLifecycleOwner) { text ->
+    override fun onPause() {
+        super.onPause()
+        disableButtons()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        enableButtons()
+    }
+
+
+    private fun setupSnackBar() {
+        viewModel.snackBar.observe(viewLifecycleOwner) { text ->
             text?.let {
-                Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show()
-                viewModel.onSnackBarShown()
+                showSnackBarWithDescription(it)
             }
         }
     }
 
-//    protected fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        gitRequestsViewModel.init()
-//        if (GDUtilities.isNetworkAvailable(this)) {
-//            gitRequestsViewModel.getGitQuote().observe(this, { mQuote ->
-//                if (null != mQuote && mQuote.length() > 0) {
-//                    activityLandingBinding.loadingQuotePb.setVisibility(View.GONE)
-//                    activityLandingBinding.landingScreenRl.setVisibility(View.VISIBLE)
-//                    activityLandingBinding.setGitQuote(mQuote)
-//                } else {
-//                    activityLandingBinding.loadingQuotePb.setVisibility(View.GONE)
-//                    activityLandingBinding.landingScreenRl.setVisibility(View.VISIBLE)
-//                    activityLandingBinding.setGitQuote(getString(R.string.no_internet))
-//                }
-//            })
-//        } else {
-//            activityLandingBinding.loadingQuotePb.setVisibility(View.GONE)
-//            activityLandingBinding.landingScreenRl.setVisibility(View.VISIBLE)
-//            activityLandingBinding.setGitQuote(getString(R.string.no_internet))
-//        }
-//    }
+    private fun setupButtons() {
+        fragmentLandingBinding.goToPullRequestsListBtn.setOnClickListener {
+            disableButtons()
+            if (viewModel.isNetworkAvailable(requireContext())) {
+                val owner = fragmentLandingBinding.repositoryOwnerEt.text.toString()
+                val name = fragmentLandingBinding.repositoryNameEt.text.toString()
+                onShowGitCommitsListButtonClicked(owner, name)
+            } else {
+                showSnackBarWithDescription(getString(R.string.network_not_available))
+            }
+        }
+        fragmentLandingBinding.selectMyRepositoryBtn.setOnClickListener {
+            disableButtons()
+            if (viewModel.isNetworkAvailable(requireContext())) {
+                fragmentLandingBinding.repositoryOwnerEt.setText(getString(R.string.sample_repository_owner))
+                fragmentLandingBinding.repositoryNameEt.setText(getString(R.string.sample_repository_name))
+                onShowGitCommitsListButtonClicked()
+            } else {
+                showSnackBarWithDescription(getString(R.string.network_not_available))
+            }
 
-//    fun goToYourRepository(view: View) {
-//        if (!GDUtilities.isNetworkAvailable(this)) {
-//            return
-//        }
-//        activityLandingBinding.goToPullRequestsListBtn.setEnabled(false)
-//        activityLandingBinding.selectMyRepositoryBtn.setEnabled(false)
-//        val mOwnerNameAndRepo: Array<String> = activityLandingBinding.repositoryUrlEt.getText()
-//                .toString().split(", *")
-//        val message: String
-//        val mRepoOwner: String = getResources().getString(R.string.repo_owner)
-//        val mRepoName: String = getResources().getString(R.string.repo_name)
-//
-//        // if you provide valid owner and repository names
-//        if (mOwnerNameAndRepo.size == 2) {
-//            // if you provide me pull requests to my favorite repository
-//            message = if (mOwnerNameAndRepo[0] == mRepoOwner && mOwnerNameAndRepo[1] == mRepoName) {
-//                "Woah! Your repository is the same as my favorite " +
-//                        "repository. Let's check it out. :)"
-//            } else {
-//                "Cool. Let's check your repository. :)"
-//            }
-//            val mNameRepoSet = mOwnerNameAndRepo[0] + ", " + mOwnerNameAndRepo[1]
-//            activityLandingBinding.repositoryUrlEt.setText(mNameRepoSet)
-//            activityLandingBinding.setGitRepository(GDGitRepository(mOwnerNameAndRepo[0],
-//                    mOwnerNameAndRepo[1]))
-//        } else {
-//            activityLandingBinding.setGitRepository(GDGitRepository(mRepoOwner, mRepoName))
-//            message = "Oops! Your repository is not valid. I will " +
-//                    "show you my favorite repository instead. :)"
-//            val mNameRepoSet = "$mRepoOwner, $mRepoName"
-//            activityLandingBinding.repositoryUrlEt.setText(mNameRepoSet)
-//        }
-//        showSnackBar(view, message, activityLandingBinding.getGitRepository())
-//    }
+        }
+    }
 
-//    fun goToMyRepository(view: View) {
-//        if (!GDUtilities.isNetworkAvailable(this)) {
-//            return
-//        }
-//        activityLandingBinding.goToPullRequestsListBtn.setEnabled(false)
-//        activityLandingBinding.selectMyRepositoryBtn.setEnabled(false)
-//        val message = "Hooray! Check out my favorite " +
-//                "repository. :)"
-//        val mRepoOwner: String = getResources().getString(R.string.repo_owner)
-//        val mRepoName: String = getResources().getString(R.string.repo_name)
-//        val mNameRepoSet = "$mRepoOwner, $mRepoName"
-//        activityLandingBinding.repositoryUrlEt.setText(mNameRepoSet)
-//        val gitRepository = GDGitRepository(mRepoOwner, mRepoName)
-//        showSnackBar(view, message, gitRepository)
-//    }
+    private fun showSnackBarWithDescription(message: String) {
+        Snackbar
+            .make(fragmentLandingBinding.root, message, Snackbar.LENGTH_SHORT)
+            .addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                override fun onShown(transientBottomBar: Snackbar?) {
+                    super.onShown(transientBottomBar)
+                    disableButtons()
+                }
 
-//    protected fun onResume() {
-//        super.onResume()
-//        activityLandingBinding.goToPullRequestsListBtn.setEnabled(true)
-//        activityLandingBinding.selectMyRepositoryBtn.setEnabled(true)
-//    }
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    enableButtons()
+                }
+            })
+            .show()
+        viewModel.onSnackBarShown()
+    }
+
+    private fun disableButtons() {
+        fragmentLandingBinding.goToPullRequestsListBtn.isEnabled = false
+        fragmentLandingBinding.selectMyRepositoryBtn.isEnabled = false
+    }
+
+    private fun enableButtons() {
+        fragmentLandingBinding.goToPullRequestsListBtn.isEnabled = true
+        fragmentLandingBinding.selectMyRepositoryBtn.isEnabled = true
+    }
+
+    private fun onShowGitCommitsListButtonClicked(
+        owner: String = getString(R.string.sample_repository_owner),
+        name: String = getString(R.string.sample_repository_name)
+    ) {
+        viewModel.updateRepositoryOwner(owner)
+        viewModel.updateRepositoryName(name)
+        viewModel.onGetGitCommitsListButtonClick()
+        if (owner.trim().isNotEmpty() && name.trim().isNotEmpty()) {
+            populateCommitsList()
+            moveToCommitsListFragment()
+        }
+    }
+    private fun populateCommitsList() {
+        viewModel.getGitCommitsList()
+    }
+
+    private fun moveToCommitsListFragment() {
+        viewModel.gitCommitsList.observe(viewLifecycleOwner) { list ->
+            if (list.isNotEmpty()) {
+                listener.showGitCommitsFragment()
+            }
+        }
+    }
 }

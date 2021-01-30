@@ -7,7 +7,10 @@
     <string name="view_commits">View Commits</string>
 
     <string name="name_repo_format">%s, %s</string>
-<!--    <string name="enter_a_repository_details">Enter your repository details below</string>-->
+    <string name="sample_repository_owner">kubernetes</string>
+    <string name="sample_repository_name">kubernetes</string>
+    <string name="network_not_available">Network not available</string>
+    <!--    <string name="enter_a_repository_details">Enter your repository details below</string>-->
 <!--    <string name="git_details_format">#%s opened on %s by %s</string>-->
 
 </resources>

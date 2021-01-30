@@ -4,12 +4,11 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
-interface NetworkAvailabilityInterface {
-    fun isNetworkAvailable(): Boolean
-}
-
-object NetworkUtil {
+@Singleton
+class NetworkUtil @Inject constructor(){
     fun isNetworkAvailable(context: Context?): Boolean {
         val connectivityManager =
                 context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

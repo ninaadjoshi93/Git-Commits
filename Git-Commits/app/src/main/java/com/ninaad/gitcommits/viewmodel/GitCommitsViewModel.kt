@@ -1,5 +1,6 @@
 package com.ninaad.gitcommits.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,63 +8,92 @@ import androidx.lifecycle.viewModelScope
 import com.ninaad.gitcommits.model.GitResponseItem
 import com.ninaad.gitcommits.repository.GitCommitsRepository
 import com.ninaad.gitcommits.repository.NetworkRequestError
+import com.ninaad.gitcommits.util.NetworkUtil
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class GitCommitsViewModel @Inject constructor(private val repository: GitCommitsRepository) : ViewModel() {
+@Singleton
+class GitCommitsViewModel @Inject constructor(private val repository: GitCommitsRepository, private val networkUtil: NetworkUtil) : ViewModel() {
 
     companion object {
-        val FACTORY = singleArgViewModelFactory(::GitCommitsViewModel)
+        val FACTORY = dualArgViewModelFactory(::GitCommitsViewModel)
     }
 
-    private var repositoryOwner: String = "kubernetes"
-    private var repositoryName: String = "kubernetes"
+    private var _repositoryOwner: String = ""
+    private var _repositoryName: String = ""
 
-    private val showSpinner = MutableLiveData<Boolean>(false)
+
+    private val _showSpinner = MutableLiveData<Boolean>(false)
     val spinner: LiveData<Boolean>
-        get() = showSpinner
+        get() = _showSpinner
 
-    private val showSnackBar = MutableLiveData<String?>()
-    val snackbar: LiveData<String?>
-        get() = showSnackBar
+    private val _showSnackBar = MutableLiveData<String?>()
+    val snackBar: LiveData<String?>
+        get() = _showSnackBar
 
-    private val gitCommitsList = MutableLiveData<List<GitResponseItem>>()
-    val commitsList: LiveData<List<GitResponseItem>>
-        get() = gitCommitsList
+    private val _gitCommitsList = MutableLiveData<List<GitResponseItem>>()
+    val gitCommitsList: LiveData<List<GitResponseItem>>
+        get() = _gitCommitsList
 
     fun onSnackBarShown() {
-        showSnackBar.value = null
+        _showSnackBar.value = null
+    }
+
+    fun isNetworkAvailable(context: Context): Boolean {
+        return networkUtil.isNetworkAvailable(context)
+    }
+
+    fun updateRepositoryOwner(owner: String){
+        _repositoryOwner = owner
+        Timber.i("value of = $_repositoryOwner")
+    }
+
+    fun updateRepositoryName(name: String){
+        _repositoryName = name
+        Timber.i("value of = $_repositoryName")
+    }
+
+    fun onGetGitCommitsListButtonClick() {
+        if (_repositoryOwner.trim().isEmpty()) {
+            _showSnackBar.value = "Please Enter Github Repository Owner"
+            return
+        }
+        if (_repositoryName.trim().isEmpty()) {
+            _showSnackBar.value = "Please Enter Github Repository Name"
+            return
+        }
     }
 
     fun getGitCommitsList() {
-        launchDataLoad {
-            val list = repository.getGitCommits(repositoryOwner, repositoryName)
-            gitCommitsList.postValue(list)
-        }
+        launchDataLoad ({
+                val list = repository.getGitCommits(_repositoryOwner, _repositoryName)
+                _gitCommitsList.postValue(list)
+            }, {
+                _gitCommitsList.postValue(emptyList())
+            }
+        )
     }
 
-    private fun launchDataLoad(block: suspend () -> Unit): Job {
+    fun clearGitCommitsList() {
+        _gitCommitsList.postValue(emptyList())
+    }
+
+    private fun launchDataLoad(complete: suspend () -> Unit, catch: suspend () -> Unit): Job {
         return viewModelScope.launch {
             try {
-                showSpinner.value = true
-                block()
+                _showSpinner.value = true
+                complete()
             } catch (error: NetworkRequestError) {
-                showSnackBar.value = error.message
+                catch()
+                _showSnackBar.value = error.message
                 Timber.i(error.cause.toString())
             } finally {
-                showSpinner.value = false
+                _showSpinner.value = false
             }
         }
-    }
-
-    fun updateRepositoryOwner(owner: String) {
-        repositoryOwner = owner
-    }
-
-    fun updateRepositoryName(name: String) {
-        repositoryName = name
     }
 
     override fun onCleared() {

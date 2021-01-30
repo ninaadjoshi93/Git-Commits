@@ -1,6 +1,5 @@
 package com.ninaad.gitcommits.ui.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +12,8 @@ import com.ninaad.gitcommits.R
 import com.ninaad.gitcommits.databinding.FragmentGitCommitsBinding
 import com.ninaad.gitcommits.ui.adapter.GitCommitsListAdapter
 import com.ninaad.gitcommits.viewmodel.GitCommitsViewModel
+import com.ninaad.gitcommits.viewmodel.ShowGitCommitsInterface
 import dagger.android.support.DaggerFragment
-import timber.log.Timber
 import javax.inject.Inject
 
 class GitCommitsFragment: DaggerFragment() {
@@ -23,6 +22,8 @@ class GitCommitsFragment: DaggerFragment() {
     lateinit var viewModel: GitCommitsViewModel
 
     private lateinit var gitCommitsListBinding: FragmentGitCommitsBinding
+
+    private lateinit var listener: ShowGitCommitsInterface
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,24 +34,26 @@ class GitCommitsFragment: DaggerFragment() {
         return gitCommitsListBinding.root
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        listener = context as ShowGitCommitsInterface
         setUpList()
-        viewModel.commitsList.observe(viewLifecycleOwner) {
-            list ->
-            Timber.i("called list result")
-            (gitCommitsListBinding.gitCommitsListRv.adapter as GitCommitsListAdapter).setPullRequestsList(list)
-        }
+        setupProgressBar()
+        setupCommitListObserver()
+    }
+    private fun setupProgressBar() {
         viewModel.spinner.observe(this) { value ->
             value.let { show ->
                 gitCommitsListBinding.spinner.visibility = if (show) View.VISIBLE else View.GONE
             }
         }
-        viewModel.getGitCommitsList()
+    }
+
+    private fun setupCommitListObserver() {
+        viewModel.gitCommitsList.observe(viewLifecycleOwner) {
+            list ->
+            (gitCommitsListBinding.gitCommitsListRv.adapter as GitCommitsListAdapter).setPullRequestsList(list)
+        }
     }
 
     private fun setUpList() {
@@ -66,5 +69,10 @@ class GitCommitsFragment: DaggerFragment() {
                 }
             })
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.clearGitCommitsList()
     }
 }

@@ -24,8 +24,14 @@ class GitCommitsListAdapter : RecyclerView.Adapter<GitCommitsListAdapter.GitComm
     }
 
     override fun onBindViewHolder(holder: GitCommitsListViewHolder, i: Int) {
-        holder.binding.gitentry = gitCommitEntryList[i]
-        Picasso.get().load(gitCommitEntryList[i].author.avatarUrl).into(holder.binding.authorAvatarIv)
+        val gitEntry = gitCommitEntryList[i]
+        holder.binding.gitentry = gitEntry
+        gitEntry?.author?.avatarUrl?.let { urlString ->
+            Picasso.get()
+                .load(urlString)
+                .error(R.drawable.github_icon)
+                .into(holder.binding.authorAvatarIv)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -33,7 +39,9 @@ class GitCommitsListAdapter : RecyclerView.Adapter<GitCommitsListAdapter.GitComm
     }
 
     fun setPullRequestsList(gitCommitsList: List<GitResponseItem>) {
-        gitCommitEntryList = gitCommitsList
+        if (gitCommitsList.isNotEmpty()) {
+            gitCommitEntryList = gitCommitsList
+        }
         notifyDataSetChanged()
     }
 

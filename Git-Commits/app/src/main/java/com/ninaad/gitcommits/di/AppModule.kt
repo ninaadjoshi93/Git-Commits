@@ -3,6 +3,7 @@ package com.ninaad.gitcommits.di
 import com.ninaad.gitcommits.BuildConfig
 import com.ninaad.gitcommits.api.GitHubAPI
 import com.ninaad.gitcommits.repository.GitCommitsRepository
+import com.ninaad.gitcommits.util.NetworkUtil
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -49,6 +50,12 @@ class AppModule {
         @Provides
         fun provideGitHubRepository(gitHubAPI: GitHubAPI) : GitCommitsRepository {
             return GitCommitsRepository(gitHubAPI)
+        }
+
+        @Singleton
+        @Provides
+        fun provideNetworkUtilInstance() : NetworkUtil {
+            return NetworkUtil()
         }
     }
 }
