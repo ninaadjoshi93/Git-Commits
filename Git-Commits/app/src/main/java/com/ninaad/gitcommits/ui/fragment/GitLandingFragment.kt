@@ -12,6 +12,7 @@ import com.ninaad.gitcommits.databinding.FragmentLandingBinding
 import com.ninaad.gitcommits.viewmodel.GitCommitsViewModel
 import com.ninaad.gitcommits.viewmodel.ShowGitCommitsInterface
 import dagger.android.support.DaggerFragment
+import timber.log.Timber
 import javax.inject.Inject
 
 class GitLandingFragment : DaggerFragment() {
@@ -33,6 +34,7 @@ class GitLandingFragment : DaggerFragment() {
         listener = context as ShowGitCommitsInterface
         setupSnackBar()
         setupButtons()
+        setupEditTexts()
     }
 
     override fun onPause() {
@@ -45,7 +47,6 @@ class GitLandingFragment : DaggerFragment() {
         enableButtons()
     }
 
-
     private fun setupSnackBar() {
         viewModel.snackBar.observe(viewLifecycleOwner) { text ->
             text?.let {
@@ -55,27 +56,21 @@ class GitLandingFragment : DaggerFragment() {
     }
 
     private fun setupButtons() {
-        fragmentLandingBinding.goToPullRequestsListBtn.setOnClickListener {
-            disableButtons()
-            if (viewModel.isNetworkAvailable(requireContext())) {
-                val owner = fragmentLandingBinding.repositoryOwnerEt.text.toString()
-                val name = fragmentLandingBinding.repositoryNameEt.text.toString()
-                onShowGitCommitsListButtonClicked(owner, name)
-            } else {
-                showSnackBarWithDescription(getString(R.string.network_not_available))
-            }
+        fragmentLandingBinding.goToCommitsListBtn.setOnClickListener {
+            val owner = fragmentLandingBinding.repositoryOwnerEt.text.toString()
+            val name = fragmentLandingBinding.repositoryNameEt.text.toString()
+            onShowGitCommitsListButtonClicked(owner, name)
         }
         fragmentLandingBinding.selectMyRepositoryBtn.setOnClickListener {
-            disableButtons()
-            if (viewModel.isNetworkAvailable(requireContext())) {
-                fragmentLandingBinding.repositoryOwnerEt.setText(getString(R.string.sample_repository_owner))
-                fragmentLandingBinding.repositoryNameEt.setText(getString(R.string.sample_repository_name))
-                onShowGitCommitsListButtonClicked()
-            } else {
-                showSnackBarWithDescription(getString(R.string.network_not_available))
-            }
-
+            fragmentLandingBinding.repositoryOwnerEt.setText(getString(R.string.sample_repository_owner))
+            fragmentLandingBinding.repositoryNameEt.setText(getString(R.string.sample_repository_name))
+            onShowGitCommitsListButtonClicked()
         }
+    }
+
+    private fun setupEditTexts() {
+        fragmentLandingBinding.repositoryOwnerEt.setText(viewModel.getRepositoryOwner())
+        fragmentLandingBinding.repositoryNameEt.setText(viewModel.getRepositoryName())
     }
 
     private fun showSnackBarWithDescription(message: String) {
@@ -97,12 +92,12 @@ class GitLandingFragment : DaggerFragment() {
     }
 
     private fun disableButtons() {
-        fragmentLandingBinding.goToPullRequestsListBtn.isEnabled = false
+        fragmentLandingBinding.goToCommitsListBtn.isEnabled = false
         fragmentLandingBinding.selectMyRepositoryBtn.isEnabled = false
     }
 
     private fun enableButtons() {
-        fragmentLandingBinding.goToPullRequestsListBtn.isEnabled = true
+        fragmentLandingBinding.goToCommitsListBtn.isEnabled = true
         fragmentLandingBinding.selectMyRepositoryBtn.isEnabled = true
     }
 
@@ -110,12 +105,19 @@ class GitLandingFragment : DaggerFragment() {
         owner: String = getString(R.string.sample_repository_owner),
         name: String = getString(R.string.sample_repository_name)
     ) {
-        viewModel.updateRepositoryOwner(owner)
-        viewModel.updateRepositoryName(name)
-        viewModel.onGetGitCommitsListButtonClick()
-        if (owner.trim().isNotEmpty() && name.trim().isNotEmpty()) {
-            populateCommitsList()
-            moveToCommitsListFragment()
+        Timber.i("called onShowGitCommitsListButtonClicked")
+        if (viewModel.isNetworkAvailable(requireContext())) {
+            viewModel.updateRepositoryOwner(owner)
+            viewModel.updateRepositoryName(name)
+            viewModel.onGetGitCommitsListButtonClick()
+            if (owner.trim().isNotEmpty() && name.trim().isNotEmpty()) {
+                populateCommitsList()
+                moveToCommitsListFragment()
+            } else {
+                Timber.i("called incomplete fields")
+            }
+        } else {
+            showSnackBarWithDescription(getString(R.string.network_not_available))
         }
     }
     private fun populateCommitsList() {

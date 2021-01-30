@@ -22,9 +22,8 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
         val FACTORY = dualArgViewModelFactory(::GitCommitsViewModel)
     }
 
-    private var _repositoryOwner: String = ""
-    private var _repositoryName: String = ""
-
+    private var repositoryOwner: String = ""
+    private var repositoryName: String = ""
 
     private val _showSpinner = MutableLiveData<Boolean>(false)
     val spinner: LiveData<Boolean>
@@ -46,22 +45,30 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
         return networkUtil.isNetworkAvailable(context)
     }
 
+    fun getRepositoryOwner(): String {
+        return repositoryOwner
+    }
+
     fun updateRepositoryOwner(owner: String){
-        _repositoryOwner = owner
-        Timber.i("value of = $_repositoryOwner")
+        repositoryOwner = owner
+        Timber.i("value of = $repositoryOwner")
+    }
+
+    fun getRepositoryName(): String {
+        return repositoryName
     }
 
     fun updateRepositoryName(name: String){
-        _repositoryName = name
-        Timber.i("value of = $_repositoryName")
+        repositoryName = name
+        Timber.i("value of = $repositoryName")
     }
 
     fun onGetGitCommitsListButtonClick() {
-        if (_repositoryOwner.trim().isEmpty()) {
+        if (repositoryOwner.trim().isEmpty()) {
             _showSnackBar.value = "Please Enter Github Repository Owner"
             return
         }
-        if (_repositoryName.trim().isEmpty()) {
+        if (repositoryName.trim().isEmpty()) {
             _showSnackBar.value = "Please Enter Github Repository Name"
             return
         }
@@ -69,12 +76,12 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
 
     fun getGitCommitsList() {
         launchDataLoad ({
-                val list = repository.getGitCommits(_repositoryOwner, _repositoryName)
+                val list = repository.getGitCommits(repositoryOwner, repositoryName)
                 _gitCommitsList.postValue(list)
             }, {
-                _gitCommitsList.postValue(emptyList())
-            }
-        )
+                // do nothing because error condition
+                Timber.i("called get list error")
+            })
     }
 
     fun clearGitCommitsList() {
@@ -94,10 +101,6 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
                 _showSpinner.value = false
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
     }
 
 }
