@@ -66,7 +66,7 @@
             android:textStyle="bold"
             android:textSize="@dimen/V18sp"
             android:textColor="@color/git_font_gray"
-            android:background="@color/lightest_gray"/>
+            android:background="@drawable/bordered_view"/>
 
         <TextView android:id="@+id/commit_date_tv"
             android:layout_width="match_parent"
