@@ -1,19 +1,14 @@
 <resources>
     <string name="app_name">Git Commits</string>
-<!--    <string name="today_s_quote">Today\'s quote</string>-->
-<!--    <string name="quote">Quote</string>-->
-<!--    <string name="enter_a_repository">Format : owner, repository_name</string>-->
-<!--    <string name="or">OR</string>-->
-<!--    <string name="my_favorite_repository">My Favorite Repository</string>-->
-<!--    <string name="view_pull_requests">View Pull Requests</string>-->
+    <string name="enter_a_repository">Format : owner, repository_name</string>
+    <string name="or">OR</string>
+    <string name="my_favorite_repository">My Favorite Repository</string>
+    <string name="view_commits">View Commits</string>
 
 <!--    <string name="repo_owner">tpope</string>-->
 <!--    <string name="repo_name">vim-pathogen</string>-->
-<!--    <string name="no_internet">No internet, no quote</string>-->
-<!--    <string name="name_repo_format">%s, %s</string>-->
+    <string name="name_repo_format">%s, %s</string>
 <!--    <string name="enter_a_repository_details">Enter your repository details below</string>-->
 <!--    <string name="git_details_format">#%s opened on %s by %s</string>-->
 
-<!--    <string name="before_pull_request">Before Pull Request</string>-->
-<!--    <string name="after_pull_request">After Pull Request</string>-->
 </resources>

@@ -11,33 +11,37 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bordered_view"
+        android:background="@color/white"
         android:padding="@dimen/V10dip">
-
-        <TextView android:id="@+id/commit_hash_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@{gitentry.hash}"
-            android:textSize="@dimen/V18sp"
-            android:textColor="@color/dark_gray"
-            android:textStyle="bold"
-            />
 
         <TextView android:id="@+id/commit_message_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{gitentry.commit.message}"
+            android:textStyle="bold"
+            android:textSize="@dimen/V18sp"
+            android:textColor="@color/git_font_gray" />
+
+        <TextView android:id="@+id/commit_hash_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/V10dip"
+            android:text="@{`Commit : ` + gitentry.hash}"
             android:textSize="@dimen/V16sp"
-            android:textColor="@color/git_font_gray"
-            android:layout_below="@+id/commit_hash_tv"/>
+            android:textColor="@color/dark_gray"
+            android:textStyle="normal"
+            android:layout_below="@+id/commit_message_tv"/>
 
         <TextView android:id="@+id/pull_date_updated_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{`Authored by ` + gitentry.commit.author.name}"
+            android:layout_marginTop="@dimen/V10dip"
+            android:gravity="end"
+            android:text="@{`Commit Author : ` + gitentry.commit.author.name}"
+            android:textStyle="italic"
             android:textSize="@dimen/V16sp"
             android:textColor="@color/git_font_gray"
-            android:layout_below="@+id/commit_message_tv"/>
+            android:layout_below="@+id/commit_hash_tv"/>
 
     </RelativeLayout>
 </layout>

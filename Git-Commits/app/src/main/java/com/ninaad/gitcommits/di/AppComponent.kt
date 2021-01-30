@@ -1,5 +1,6 @@
 package com.ninaad.gitcommits.di
 
+import android.content.Context
 import com.ninaad.gitcommits.application.GitApplication
 import dagger.BindsInstance
 import dagger.Component
@@ -17,17 +18,8 @@ import javax.inject.Singleton
 )
 interface AppComponent: AndroidInjector<GitApplication> {
 
-    @Component.Builder
-    interface Builder {
-
-        @BindsInstance
-        fun application(application: GitApplication): Builder
-
-        fun build(): AppComponent
+    @Component.Factory
+    interface Factory {
+        fun create(@BindsInstance context: Context) : AppComponent
     }
-
-//    @Component.Factory
-//    interface Factory {
-//        fun create(@BindsInstance context: Context) : AppComponent
-//    }
 }

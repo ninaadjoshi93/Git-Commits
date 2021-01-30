@@ -3,7 +3,7 @@
     <item android:start="@dimen/V16dip"
         android:end="@dimen/V16dip">
         <shape>
-            <solid android:color="@color/dark_gray"/>
+            <solid android:color="@color/light_gray"/>
             <size android:height="@dimen/divider_height" />
         </shape>
     </item>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".views.activities.GDLandingActivity"
+        android:background="@color/white">
+
+        <ProgressBar
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/colorGitPrimaryDark"
+            android:visibility="gone"/>
+
+        <RelativeLayout
+            android:id="@+id/landing_screen_rl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/github_logo_iv"
+                android:layout_width="@dimen/V100dip"
+                android:layout_height="@dimen/V100dip"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/V20dip"
+                android:src="@drawable/github_icon" />
+
+            <EditText
+                android:id="@+id/repository_url_et"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/github_logo_iv"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/V10dip"
+                android:background="@drawable/git_theme_input_bg"
+                android:hint="@string/enter_a_repository"
+                android:imeOptions="actionDone"
+                android:inputType="textUri"
+                android:padding="@dimen/V10dip"
+                android:textColor="@color/light_gray"
+                android:textColorHint="@color/translucent_white"
+                android:textSize="@dimen/V20sp" />
+
+            <Button
+                android:id="@+id/go_to_pull_requests_list_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/repository_url_et"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="@dimen/V20dip"
+                android:layout_marginTop="@dimen/V20dip"
+                android:layout_marginEnd="@dimen/V20dip"
+                android:background="@drawable/git_theme_button_selector"
+                android:gravity="center"
+                android:onClick="goToYourRepository"
+                android:padding="@dimen/V10dip"
+                android:text="@string/view_commits"
+                android:textAllCaps="false"
+                android:textColor="@color/light_gray"
+                android:textSize="@dimen/V18sp" />
+
+
+            <TextView
+                android:id="@+id/or_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/go_to_pull_requests_list_btn"
+                android:layout_marginStart="@dimen/V20dip"
+                android:layout_marginTop="@dimen/V5dip"
+                android:layout_marginEnd="@dimen/V20dip"
+                android:gravity="center"
+                android:padding="@dimen/V5dip"
+                android:text="@string/or"
+                android:textColor="@color/dark_gray"
+                android:textSize="@dimen/V14sp" />
+
+            <Button
+                android:id="@+id/select_my_repository_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/or_tv"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="@dimen/V20dip"
+                android:layout_marginTop="@dimen/V5dip"
+                android:layout_marginEnd="@dimen/V20dip"
+                android:background="@drawable/git_theme_button_selector"
+                android:gravity="center"
+                android:onClick="goToMyRepository"
+                android:padding="@dimen/V10dip"
+                android:text="@string/my_favorite_repository"
+                android:textAllCaps="false"
+                android:textColor="@color/light_gray"
+                android:textSize="@dimen/V18sp"
+                android:layout_marginBottom="@dimen/V50dip"/>
+
+        </RelativeLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</ScrollView>

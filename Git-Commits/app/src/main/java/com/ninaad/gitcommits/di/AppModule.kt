@@ -14,6 +14,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -43,6 +44,7 @@ class AppModule {
             return Retrofit.Builder()
                 .baseUrl(BuildConfig.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .client(client)
                 .build()
                 .create(GitHubAPI::class.java)
@@ -50,8 +52,8 @@ class AppModule {
 
         @Singleton
         @Provides
-        fun provideGitHubRepository() : GitCommitsRepository {
-            return GitCommitsRepository()
+        fun provideGitHubRepository(gitHubAPI: GitHubAPI) : GitCommitsRepository {
+            return GitCommitsRepository(gitHubAPI)
         }
 
         @Singleton

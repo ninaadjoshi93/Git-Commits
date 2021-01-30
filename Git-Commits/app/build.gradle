@@ -21,11 +21,11 @@ android {
     buildTypes {
 
         debug {
-            buildConfigField "String", 'BASE_URL', '"https://api.github.com/"'
+            buildConfigField "String", 'BASE_URL', '"https://api.github.com"'
         }
 
         release {
-            buildConfigField "String", 'BASE_URL', '"https://api.github.com/"'
+            buildConfigField "String", 'BASE_URL', '"https://api.github.com"'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -78,6 +78,7 @@ dependencies {
     // Retrofit dependencies
     implementation "com.squareup.retrofit2:retrofit:${versions.retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:converter-scalars:${versions.retrofit}"
     implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
 
     // Timber dependency for logging
