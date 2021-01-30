@@ -84,9 +84,8 @@ dependencies {
     // Timber dependency for logging
     implementation "com.jakewharton.timber:timber:${versions.timber}"
 
-    // Glide dependency for showing Images
-    implementation "com.github.bumptech.glide:glide:${versions.glide}"
-    annotationProcessor "com.github.bumptech.glide:compiler:${versions.glide}"
+    // Picasso dependency for showing Images
+    implementation "com.squareup.picasso:picasso:${versions.picasso}"
 
     // enabling multidex support
     implementation "androidx.multidex:multidex:${versions.multidex}"

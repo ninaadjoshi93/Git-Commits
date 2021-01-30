@@ -11,15 +11,6 @@
         tools:context=".views.activities.GDLandingActivity"
         android:background="@color/white">
 
-        <ProgressBar
-            android:id="@+id/spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true"
-            android:indeterminateTint="@color/colorGitPrimaryDark"
-            android:visibility="gone"/>
-
         <RelativeLayout
             android:id="@+id/landing_screen_rl"
             android:layout_width="match_parent"
@@ -36,14 +27,14 @@
                 android:src="@drawable/github_icon" />
 
             <EditText
-                android:id="@+id/repository_url_et"
+                android:id="@+id/repository_owner_et"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/github_logo_iv"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/V10dip"
                 android:background="@drawable/git_theme_input_bg"
-                android:hint="@string/enter_a_repository"
+                android:hint="@string/enter_repo_owner"
                 android:imeOptions="actionDone"
                 android:inputType="textUri"
                 android:padding="@dimen/V10dip"
@@ -51,11 +42,29 @@
                 android:textColorHint="@color/translucent_white"
                 android:textSize="@dimen/V20sp" />
 
+
+            <EditText
+                android:id="@+id/repository_name_et"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/repository_owner_et"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/V10dip"
+                android:background="@drawable/git_theme_input_bg"
+                android:hint="@string/enter_repo_name"
+                android:imeOptions="actionDone"
+                android:inputType="textUri"
+                android:padding="@dimen/V10dip"
+                android:textColor="@color/light_gray"
+                android:textColorHint="@color/translucent_white"
+                android:textSize="@dimen/V20sp" />
+
+
             <Button
                 android:id="@+id/go_to_pull_requests_list_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/repository_url_et"
+                android:layout_below="@+id/repository_owner_et"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="@dimen/V20dip"
                 android:layout_marginTop="@dimen/V20dip"

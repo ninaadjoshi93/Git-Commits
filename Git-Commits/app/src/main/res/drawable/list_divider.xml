@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:start="@dimen/V16dip"
-        android:end="@dimen/V16dip">
+    <item>
         <shape>
             <solid android:color="@color/light_gray"/>
             <size android:height="@dimen/divider_height" />

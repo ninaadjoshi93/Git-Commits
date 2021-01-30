@@ -1,13 +1,13 @@
 package com.ninaad.gitcommits.ui.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ninaad.gitcommits.R
 import com.ninaad.gitcommits.databinding.ListItemGitCommitBinding
 import com.ninaad.gitcommits.model.GitResponseItem
+import com.squareup.picasso.Picasso
 
 /**
  * Created by ninaad on 2/25/19.
@@ -25,7 +25,7 @@ class GitCommitsListAdapter : RecyclerView.Adapter<GitCommitsListAdapter.GitComm
 
     override fun onBindViewHolder(holder: GitCommitsListViewHolder, i: Int) {
         holder.binding.gitentry = gitCommitEntryList[i]
-//        holder.binding.executePendingBindings()
+        Picasso.get().load(gitCommitEntryList[i].author.avatarUrl).into(holder.binding.authorAvatarIv)
     }
 
     override fun getItemCount(): Int {

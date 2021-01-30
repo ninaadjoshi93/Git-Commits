@@ -1,12 +1,7 @@
 package com.ninaad.gitcommits.di
 
-import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestManager
-import com.bumptech.glide.request.RequestOptions
 import com.ninaad.gitcommits.BuildConfig
-import com.ninaad.gitcommits.R
 import com.ninaad.gitcommits.api.GitHubAPI
-import com.ninaad.gitcommits.application.GitApplication
 import com.ninaad.gitcommits.repository.GitCommitsRepository
 import dagger.Module
 import dagger.Provides
@@ -54,22 +49,6 @@ class AppModule {
         @Provides
         fun provideGitHubRepository(gitHubAPI: GitHubAPI) : GitCommitsRepository {
             return GitCommitsRepository(gitHubAPI)
-        }
-
-        @Singleton
-        @Provides
-        fun provideRequestOptions() : RequestOptions {
-            return RequestOptions
-                .placeholderOf(R.drawable.github_icon)
-                .error(R.drawable.github_icon)
-        }
-        @Singleton
-        @Provides
-        fun provideGlideInstance(
-            application: GitApplication,
-            requestOptions: RequestOptions
-        ): RequestManager {
-            return Glide.with(application).setDefaultRequestOptions(requestOptions)
         }
     }
 }

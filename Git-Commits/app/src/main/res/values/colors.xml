@@ -16,6 +16,7 @@
 
     <color name="translucent_white">#66FFFFFF</color>
     <color name="dark_gray">#333333</color>
+    <color name="lightest_gray">#EEEEEEEE</color>
     <color name="light_gray">#DDDDDD</color>
     <color name="git_font_gray">#586069</color>
     <!--Diff colors-->

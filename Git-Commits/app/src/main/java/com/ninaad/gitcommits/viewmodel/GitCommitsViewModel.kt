@@ -18,6 +18,9 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
         val FACTORY = singleArgViewModelFactory(::GitCommitsViewModel)
     }
 
+    private var repositoryOwner: String = "kubernetes"
+    private var repositoryName: String = "kubernetes"
+
     private val showSpinner = MutableLiveData<Boolean>(false)
     val spinner: LiveData<Boolean>
         get() = showSpinner
@@ -36,7 +39,7 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
 
     fun getGitCommitsList() {
         launchDataLoad {
-            val list = repository.getGitCommits("kubernetes", "kubernetes")
+            val list = repository.getGitCommits(repositoryOwner, repositoryName)
             gitCommitsList.postValue(list)
         }
     }
@@ -53,6 +56,14 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
                 showSpinner.value = false
             }
         }
+    }
+
+    fun updateRepositoryOwner(owner: String) {
+        repositoryOwner = owner
+    }
+
+    fun updateRepositoryName(name: String) {
+        repositoryName = name
     }
 
     override fun onCleared() {
