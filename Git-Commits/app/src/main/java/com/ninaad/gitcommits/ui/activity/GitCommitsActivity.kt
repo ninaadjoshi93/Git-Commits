@@ -15,9 +15,11 @@ class GitCommitsActivity : DaggerAppCompatActivity(), ShowGitCommitsInterface {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_git_commits)
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.git_commits_fragment, GitLandingFragment(), "current")
-            .commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.git_commits_fragment, GitLandingFragment(), "landing")
+                .commit()
+        }
     }
 
     override fun showGitCommitsFragment() {
