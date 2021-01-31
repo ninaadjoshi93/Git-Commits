@@ -1,13 +1,16 @@
 package com.ninaad.gitcommits
 
 import com.google.gson.Gson
-import com.ninaad.gitcommits.api.GitHubAPI
 import com.ninaad.gitcommits.model.GitResponseItem
 import com.ninaad.gitcommits.repository.GitCommitsRepository
+import com.ninaad.gitcommits.util.NetworkUtil
+import com.ninaad.gitcommits.viewmodel.GitCommitsViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import kotlinx.coroutines.test.resetMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -16,22 +19,32 @@ import timber.log.Timber
 import java.io.IOException
 import java.nio.charset.Charset
 
-class GitCommitsRepositoryTest {
+@ExperimentalCoroutinesApi
+class GitCommitsViewModelTest {
 
-    lateinit var sut: GitCommitsRepository
+    lateinit var sut: GitCommitsViewModel
 
     @MockK
-    lateinit var mockApiClass: GitHubAPI
+    lateinit var repository: GitCommitsRepository
+
+    @MockK
+    lateinit var networkUtil: NetworkUtil
 
     lateinit var output: List<GitResponseItem>
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        sut = GitCommitsRepository(mockApiClass)
+        sut = GitCommitsViewModel(repository, networkUtil)
+        every {
+            networkUtil.isNetworkAvailable()
+        } returns true
+
         coEvery {
-            mockApiClass.getCommits("owner", "name")
-        } returns emptyList()
+            repository.getGitCommits("owner", "name")
+        } coAnswers {
+            emptyList()
+        }
 
         val inputStream = ClassLoader.getSystemClassLoader()
             .getResourceAsStream("get_commits_success_response.json")
@@ -40,8 +53,11 @@ class GitCommitsRepositoryTest {
             val content = reader.readText()
             output = Gson().fromJson(content, Array<GitResponseItem>::class.java).toList()
             coEvery {
-                mockApiClass.getCommits("kubernetes", "kubernetes")
-            } returns output
+                repository.getGitCommits("kubernetes", "kubernetes")
+            } coAnswers {
+                output
+            }
+
         } catch (exception: IOException) {
             Timber.i("Resource file not found")
         } finally {
@@ -50,26 +66,23 @@ class GitCommitsRepositoryTest {
     }
 
     @Test
-    fun testGetGitCommitsEmptyMethod() = runBlocking {
-        val repoOwner = "owner"
-        val repoName = "name"
-        val expected = emptyList<GitResponseItem>()
-        val actual = sut.getGitCommits(repoOwner, repoName)
-        assertEquals(expected, actual)
+    fun testUpdateRepositoryOwner() {
+        val owner = "owner"
+        sut.updateRepositoryOwner(owner)
+        val actual = sut.getRepositoryOwner()
+        assertEquals(owner, actual)
     }
 
     @Test
-    fun testGetGitCommitsValidMethod() = runBlocking {
-        val repoOwner = "kubernetes"
-        val repoName = "kubernetes"
-        val expected = ArrayList(output)
-        val actual = sut.getGitCommits(repoOwner, repoName)
-        assertEquals(expected, actual)
-        assertEquals(expected.size, actual.size)
+    fun testUpdateRepositoryName() {
+        val name = "name"
+        sut.updateRepositoryName(name)
+        val actual = sut.getRepositoryName()
+        assertEquals(name, actual)
     }
 
     @After
     fun tearDown() {
-
+        Dispatchers.resetMain()
     }
 }
