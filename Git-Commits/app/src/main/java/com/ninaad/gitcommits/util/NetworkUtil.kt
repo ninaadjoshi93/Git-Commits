@@ -8,10 +8,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NetworkUtil @Inject constructor() {
-    fun isNetworkAvailable(context: Context?): Boolean {
+class NetworkUtil @Inject constructor(private val context: Context) {
+    fun isNetworkAvailable(): Boolean {
         val connectivityManager =
-                context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         connectivityManager.let {
             val capabilities =
                     connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)

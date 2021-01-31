@@ -31,17 +31,13 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
     val uiState: LiveData<UIStates>
         get() = _uiState
 
-    fun isNetworkAvailable(context: Context): Boolean {
-        return networkUtil.isNetworkAvailable(context)
-    }
-
     fun getRepositoryOwner(): String {
         return repositoryOwner
     }
 
     fun updateRepositoryOwner(owner: String){
         repositoryOwner = owner
-        Timber.i("value of = $repositoryOwner")
+        Timber.i("value of owner = $repositoryOwner")
     }
 
     fun getRepositoryName(): String {
@@ -50,7 +46,7 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
 
     fun updateRepositoryName(name: String){
         repositoryName = name
-        Timber.i("value of = $repositoryName")
+        Timber.i("value of name = $repositoryName")
     }
 
     fun onGetGitCommitsListButtonClick() {
@@ -62,21 +58,27 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
             _uiState.postValue(UIStates.EmptyName)
             return
         }
+        getGitCommitsList()
     }
 
-    fun getGitCommitsList() = viewModelScope.launch {
-        try {
-            _uiState.postValue(UIStates.InProgress)
-            val data = repository.getGitCommits(repositoryOwner, repositoryName)
-            _uiState.postValue(UIStates.Success(data))
-        } catch (timeout: TimeoutCancellationException) {
-            _uiState.postValue(UIStates.TimeOut)
-        } catch (network: IOException) {
-            _uiState.postValue(UIStates.Error(network.message ?: "Unknown Error"))
-        } catch (httpException: HttpException) {
-            _uiState.postValue(UIStates.Error(httpException.message ?: "Unknown Error"))
-        }
-        finally {
+    private fun getGitCommitsList() = viewModelScope.launch {
+        if (networkUtil.isNetworkAvailable()) {
+            try {
+                _uiState.postValue(UIStates.InProgress)
+                val data = repository.getGitCommits(repositoryOwner, repositoryName)
+                _uiState.postValue(UIStates.Success(data))
+            } catch (timeout: TimeoutCancellationException) {
+                _uiState.postValue(UIStates.TimeOut)
+            } catch (network: IOException) {
+                _uiState.postValue(UIStates.Error(network.message ?: "Unknown Error"))
+            } catch (httpException: HttpException) {
+                _uiState.postValue(UIStates.Error(httpException.message ?: "Unknown Error"))
+            } finally {
+                delay(1000)
+                _uiState.postValue(UIStates.Idle)
+            }
+        } else {
+            _uiState.postValue(UIStates.NoNetwork)
             delay(1000)
             _uiState.postValue(UIStates.Idle)
         }
@@ -85,11 +87,11 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
     sealed class UIStates {
         data class Success(val list: List<GitResponseItem>): UIStates()
         object InProgress: UIStates()
+        object NoNetwork: UIStates()
         object TimeOut: UIStates()
         data class Error(val errorString: String): UIStates()
         object EmptyOwner: UIStates()
         object EmptyName: UIStates()
         object Idle: UIStates()
     }
-
 }

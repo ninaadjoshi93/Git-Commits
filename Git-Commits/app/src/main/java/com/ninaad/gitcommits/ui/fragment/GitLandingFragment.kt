@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.observe
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -72,6 +71,10 @@ class GitLandingFragment constructor(private val showListFragment: () -> Unit) :
                     fragmentLandingBinding.spinner.visibility = View.GONE
                     showSnackBarWithDescription(uiState.errorString)
                 }
+                is GitCommitsViewModel.UIStates.NoNetwork -> {
+                    // Show no network message
+                    showSnackBarWithDescription(getString(R.string.network_not_available))
+                }
                 is GitCommitsViewModel.UIStates.Idle -> {
                     // Idle state
                     fragmentLandingBinding.spinner.visibility = View.GONE
@@ -94,8 +97,8 @@ class GitLandingFragment constructor(private val showListFragment: () -> Unit) :
 
     private fun setupButtons() {
         fragmentLandingBinding.goToCommitsListBtn.setOnClickListener {
-            val owner = viewModel.getRepositoryOwner()
-            val name = viewModel.getRepositoryName()
+            val owner = fragmentLandingBinding.repositoryOwnerEt.text.toString()
+            val name = fragmentLandingBinding.repositoryNameEt.text.toString()
             onShowGitCommitsListButtonClicked(owner, name)
         }
         fragmentLandingBinding.selectMyRepositoryBtn.setOnClickListener {
@@ -106,16 +109,8 @@ class GitLandingFragment constructor(private val showListFragment: () -> Unit) :
     }
 
     private fun setupEditTexts() {
-        fragmentLandingBinding.repositoryOwnerEt.addTextChangedListener {
-            it?.let { editable ->
-                viewModel.updateRepositoryOwner(editable.toString())
-            }
-        }
-        fragmentLandingBinding.repositoryNameEt.addTextChangedListener {
-            it?.let { editable ->
-                viewModel.updateRepositoryName(editable.toString())
-            }
-        }
+        fragmentLandingBinding.repositoryOwnerEt.setText(viewModel.getRepositoryOwner())
+        fragmentLandingBinding.repositoryNameEt.setText(viewModel.getRepositoryName())
     }
 
     private fun showSnackBarWithDescription(message: String) {
@@ -126,7 +121,6 @@ class GitLandingFragment constructor(private val showListFragment: () -> Unit) :
                     super.onShown(transientBottomBar)
                     disableButtons()
                 }
-
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
                     enableButtons()
@@ -149,18 +143,8 @@ class GitLandingFragment constructor(private val showListFragment: () -> Unit) :
         owner: String = getString(R.string.sample_repository_owner),
         name: String = getString(R.string.sample_repository_name)
     ) {
-        Timber.i("called onShowGitCommitsListButtonClicked")
-        if (viewModel.isNetworkAvailable(requireContext())) {
-            viewModel.updateRepositoryOwner(owner)
-            viewModel.updateRepositoryName(name)
-            viewModel.onGetGitCommitsListButtonClick()
-            if (owner.trim().isNotEmpty() && name.trim().isNotEmpty()) {
-                viewModel.getGitCommitsList()
-            } else {
-                Timber.i("called incomplete fields")
-            }
-        } else {
-            showSnackBarWithDescription(getString(R.string.network_not_available))
-        }
+        viewModel.updateRepositoryOwner(owner)
+        viewModel.updateRepositoryName(name)
+        viewModel.onGetGitCommitsListButtonClick()
     }
 }

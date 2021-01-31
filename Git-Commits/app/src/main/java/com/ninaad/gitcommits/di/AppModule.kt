@@ -1,5 +1,6 @@
 package com.ninaad.gitcommits.di
 
+import android.content.Context
 import com.ninaad.gitcommits.BuildConfig
 import com.ninaad.gitcommits.api.GitHubAPI
 import com.ninaad.gitcommits.repository.GitCommitsRepository
@@ -17,6 +18,7 @@ class AppModule {
 
     companion object {
 
+        @JvmStatic
         @Singleton
         @Provides
         fun provideHttpLoggingInterceptor() : HttpLoggingInterceptor {
@@ -25,6 +27,7 @@ class AppModule {
             }
         }
 
+        @JvmStatic
         @Singleton
         @Provides
         fun provideOkHttpClient(interceptor: HttpLoggingInterceptor) : OkHttpClient {
@@ -33,6 +36,7 @@ class AppModule {
                 .build()
         }
 
+        @JvmStatic
         @Singleton
         @Provides
         fun provideRetrofitInstance(client: OkHttpClient) : GitHubAPI {
@@ -44,16 +48,18 @@ class AppModule {
                 .create(GitHubAPI::class.java)
         }
 
+        @JvmStatic
         @Singleton
         @Provides
         fun provideGitHubRepository(gitHubAPI: GitHubAPI) : GitCommitsRepository {
             return GitCommitsRepository(gitHubAPI)
         }
 
+        @JvmStatic
         @Singleton
         @Provides
-        fun provideNetworkUtilInstance() : NetworkUtil {
-            return NetworkUtil()
+        fun provideNetworkUtilInstance(context: Context) : NetworkUtil {
+            return NetworkUtil(context)
         }
     }
 }

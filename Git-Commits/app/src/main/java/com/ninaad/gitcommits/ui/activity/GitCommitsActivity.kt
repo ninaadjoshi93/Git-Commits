@@ -5,7 +5,6 @@ import com.ninaad.gitcommits.R
 import com.ninaad.gitcommits.ui.fragment.GitCommitsFragment
 import com.ninaad.gitcommits.ui.fragment.GitLandingFragment
 import dagger.android.support.DaggerAppCompatActivity
-import timber.log.Timber
 
 
 class GitCommitsActivity : DaggerAppCompatActivity() {
@@ -24,7 +23,6 @@ class GitCommitsActivity : DaggerAppCompatActivity() {
     }
 
     private fun showGitCommitsFragment() {
-        Timber.i("called showGitCommitsFragment")
         supportFragmentManager.beginTransaction()
             .replace(R.id.git_commits_fragment, GitCommitsFragment.newInstance(), "current")
             .commit()
