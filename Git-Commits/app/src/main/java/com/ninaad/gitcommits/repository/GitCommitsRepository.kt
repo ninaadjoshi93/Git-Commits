@@ -10,14 +10,8 @@ import javax.inject.Singleton
 class GitCommitsRepository @Inject constructor(private val gitHubAPI: GitHubAPI){
 
     suspend fun getGitCommits(owner: String, repository: String): List<GitResponseItem> {
-        try {
-            return withTimeout(5_000) {
-                gitHubAPI.getCommits(owner, repository)
-            }
-        } catch (cause: Throwable) {
-            throw NetworkRequestError("Unable to get Git commits", cause)
+        return withTimeout(5_000) {
+            gitHubAPI.getCommits(owner, repository)
         }
     }
 }
-
-class NetworkRequestError(message: String, cause: Throwable?) : Throwable(message, cause)

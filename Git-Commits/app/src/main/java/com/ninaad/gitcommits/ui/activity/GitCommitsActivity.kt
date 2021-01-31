@@ -4,12 +4,11 @@ import android.os.Bundle
 import com.ninaad.gitcommits.R
 import com.ninaad.gitcommits.ui.fragment.GitCommitsFragment
 import com.ninaad.gitcommits.ui.fragment.GitLandingFragment
-import com.ninaad.gitcommits.viewmodel.ShowGitCommitsInterface
 import dagger.android.support.DaggerAppCompatActivity
 import timber.log.Timber
 
 
-class GitCommitsActivity : DaggerAppCompatActivity(), ShowGitCommitsInterface {
+class GitCommitsActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,15 +16,17 @@ class GitCommitsActivity : DaggerAppCompatActivity(), ShowGitCommitsInterface {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.git_commits_fragment, GitLandingFragment(), "landing")
+                .replace(R.id.git_commits_fragment, GitLandingFragment.newInstance {
+                    showGitCommitsFragment()
+                }, "landing")
                 .commit()
         }
     }
 
-    override fun showGitCommitsFragment() {
+    private fun showGitCommitsFragment() {
         Timber.i("called showGitCommitsFragment")
         supportFragmentManager.beginTransaction()
-            .replace(R.id.git_commits_fragment, GitCommitsFragment(), "current")
+            .replace(R.id.git_commits_fragment, GitCommitsFragment.newInstance(), "current")
             .commit()
     }
 
@@ -33,7 +34,9 @@ class GitCommitsActivity : DaggerAppCompatActivity(), ShowGitCommitsInterface {
         val fragment = supportFragmentManager.findFragmentByTag("current")
         if (fragment != null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.git_commits_fragment, GitLandingFragment())
+                .replace(R.id.git_commits_fragment, GitLandingFragment.newInstance {
+                    showGitCommitsFragment()
+                })
                 .commit()
         } else {
             super.onBackPressed()

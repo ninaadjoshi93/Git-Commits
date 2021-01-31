@@ -4,25 +4,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.observe
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.ninaad.gitcommits.R
 import com.ninaad.gitcommits.databinding.FragmentLandingBinding
 import com.ninaad.gitcommits.viewmodel.GitCommitsViewModel
-import com.ninaad.gitcommits.viewmodel.ShowGitCommitsInterface
 import dagger.android.support.DaggerFragment
 import timber.log.Timber
 import javax.inject.Inject
 
-class GitLandingFragment : DaggerFragment() {
+class GitLandingFragment constructor(private val showListFragment: () -> Unit) : DaggerFragment() {
 
     @Inject
     lateinit var viewModel: GitCommitsViewModel
 
     private lateinit var fragmentLandingBinding: FragmentLandingBinding
 
-    private lateinit var listener: ShowGitCommitsInterface
+    companion object {
+        fun newInstance(showListFragment: () -> Unit): GitLandingFragment {
+            return GitLandingFragment(showListFragment)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         fragmentLandingBinding = FragmentLandingBinding.inflate(inflater)
@@ -31,8 +35,49 @@ class GitLandingFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        listener = context as ShowGitCommitsInterface
-        setupSnackBar()
+        viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is GitCommitsViewModel.UIStates.Success -> {
+                    // Update RecyclerView
+                    // Hide ProgressBar
+                    fragmentLandingBinding.spinner.visibility = View.GONE
+                    if (uiState.list.isNotEmpty()) {
+                        showListFragment()
+                    }
+                }
+                is GitCommitsViewModel.UIStates.InProgress ->  {
+                    // Show ProgressBar
+                    fragmentLandingBinding.spinner.visibility = View.VISIBLE
+                }
+                is GitCommitsViewModel.UIStates.EmptyOwner -> {
+                    // Hide Progress bar
+                    // Show error with empty owner
+                    fragmentLandingBinding.spinner.visibility = View.GONE
+                    showSnackBarWithDescription(getString(R.string.provide_repo_owner))
+                }
+                is GitCommitsViewModel.UIStates.EmptyName -> {
+                    // Hide Progress bar
+                    // Show error with empty name
+                    fragmentLandingBinding.spinner.visibility = View.GONE
+                    showSnackBarWithDescription(getString(R.string.provide_repo_name))
+                }
+                is GitCommitsViewModel.UIStates.TimeOut -> {
+                    // Hide Progress bar
+                    // Show error with timeout and retry
+                    fragmentLandingBinding.spinner.visibility = View.GONE
+                    showSnackBarWithDescription(getString(R.string.request_timed_out))
+                }
+                is GitCommitsViewModel.UIStates.Error -> {
+                    // Show error with message
+                    fragmentLandingBinding.spinner.visibility = View.GONE
+                    showSnackBarWithDescription(uiState.errorString)
+                }
+                is GitCommitsViewModel.UIStates.Idle -> {
+                    // Idle state
+                    fragmentLandingBinding.spinner.visibility = View.GONE
+                }
+            }
+        }
         setupButtons()
         setupEditTexts()
     }
@@ -47,18 +92,10 @@ class GitLandingFragment : DaggerFragment() {
         enableButtons()
     }
 
-    private fun setupSnackBar() {
-        viewModel.snackBar.observe(viewLifecycleOwner) { text ->
-            text?.let {
-                showSnackBarWithDescription(it)
-            }
-        }
-    }
-
     private fun setupButtons() {
         fragmentLandingBinding.goToCommitsListBtn.setOnClickListener {
-            val owner = fragmentLandingBinding.repositoryOwnerEt.text.toString()
-            val name = fragmentLandingBinding.repositoryNameEt.text.toString()
+            val owner = viewModel.getRepositoryOwner()
+            val name = viewModel.getRepositoryName()
             onShowGitCommitsListButtonClicked(owner, name)
         }
         fragmentLandingBinding.selectMyRepositoryBtn.setOnClickListener {
@@ -69,8 +106,16 @@ class GitLandingFragment : DaggerFragment() {
     }
 
     private fun setupEditTexts() {
-        fragmentLandingBinding.repositoryOwnerEt.setText(viewModel.getRepositoryOwner())
-        fragmentLandingBinding.repositoryNameEt.setText(viewModel.getRepositoryName())
+        fragmentLandingBinding.repositoryOwnerEt.addTextChangedListener {
+            it?.let { editable ->
+                viewModel.updateRepositoryOwner(editable.toString())
+            }
+        }
+        fragmentLandingBinding.repositoryNameEt.addTextChangedListener {
+            it?.let { editable ->
+                viewModel.updateRepositoryName(editable.toString())
+            }
+        }
     }
 
     private fun showSnackBarWithDescription(message: String) {
@@ -88,7 +133,6 @@ class GitLandingFragment : DaggerFragment() {
                 }
             })
             .show()
-        viewModel.onSnackBarShown()
     }
 
     private fun disableButtons() {
@@ -111,24 +155,12 @@ class GitLandingFragment : DaggerFragment() {
             viewModel.updateRepositoryName(name)
             viewModel.onGetGitCommitsListButtonClick()
             if (owner.trim().isNotEmpty() && name.trim().isNotEmpty()) {
-                populateCommitsList()
-                moveToCommitsListFragment()
+                viewModel.getGitCommitsList()
             } else {
                 Timber.i("called incomplete fields")
             }
         } else {
             showSnackBarWithDescription(getString(R.string.network_not_available))
-        }
-    }
-    private fun populateCommitsList() {
-        viewModel.getGitCommitsList()
-    }
-
-    private fun moveToCommitsListFragment() {
-        viewModel.gitCommitsList.observe(viewLifecycleOwner) { list ->
-            if (list.isNotEmpty()) {
-                listener.showGitCommitsFragment()
-            }
         }
     }
 }

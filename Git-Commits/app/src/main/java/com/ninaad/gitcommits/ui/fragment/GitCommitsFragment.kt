@@ -12,7 +12,6 @@ import com.ninaad.gitcommits.R
 import com.ninaad.gitcommits.databinding.FragmentGitCommitsBinding
 import com.ninaad.gitcommits.ui.adapter.GitCommitsListAdapter
 import com.ninaad.gitcommits.viewmodel.GitCommitsViewModel
-import com.ninaad.gitcommits.viewmodel.ShowGitCommitsInterface
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
@@ -23,7 +22,11 @@ class GitCommitsFragment: DaggerFragment() {
 
     private lateinit var gitCommitsListBinding: FragmentGitCommitsBinding
 
-    private lateinit var listener: ShowGitCommitsInterface
+    companion object {
+        fun newInstance(): GitCommitsFragment {
+            return GitCommitsFragment()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,24 +39,28 @@ class GitCommitsFragment: DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        listener = context as ShowGitCommitsInterface
         setUpList()
-        setupProgressBar()
-        setupCommitListObserver()
-    }
-    private fun setupProgressBar() {
-        viewModel.spinner.observe(this) { value ->
-            value.let { show ->
-                gitCommitsListBinding.spinner.visibility = if (show) View.VISIBLE else View.GONE
+        viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is GitCommitsViewModel.UIStates.Success -> {
+                    // Update RecyclerView
+                    // Hide ProgressBar
+                    gitCommitsListBinding.spinner.visibility = View.GONE
+                    if (uiState.list.isNotEmpty()) {
+                        (gitCommitsListBinding.gitCommitsListRv.adapter as GitCommitsListAdapter).setPullRequestsList(uiState.list)
+                    }
+                }
+                is GitCommitsViewModel.UIStates.InProgress ->  {
+                    // Show ProgressBar
+                    gitCommitsListBinding.spinner.visibility = View.VISIBLE
+                }
+                is GitCommitsViewModel.UIStates.Idle -> {
+                    // do nothing
+                }
             }
         }
-    }
 
-    private fun setupCommitListObserver() {
-        viewModel.gitCommitsList.observe(viewLifecycleOwner) {
-            list ->
-            (gitCommitsListBinding.gitCommitsListRv.adapter as GitCommitsListAdapter).setPullRequestsList(list)
-        }
+
     }
 
     private fun setUpList() {
@@ -69,10 +76,5 @@ class GitCommitsFragment: DaggerFragment() {
                 }
             })
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.clearGitCommitsList()
     }
 }

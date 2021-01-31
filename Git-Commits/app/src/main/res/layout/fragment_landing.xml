@@ -113,6 +113,19 @@
                 android:textSize="@dimen/V18sp"
                 android:layout_marginBottom="@dimen/V50dip"/>
 
+            <ProgressBar
+                android:id="@+id/spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/V20dip"
+                android:layout_gravity="center"
+                android:layout_below="@+id/select_my_repository_btn"
+                android:layout_centerHorizontal="true"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/colorGitPrimaryDark"
+                android:visibility="gone"/>
+
+
         </RelativeLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </ScrollView>

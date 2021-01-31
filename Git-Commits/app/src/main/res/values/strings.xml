@@ -10,7 +10,7 @@
     <string name="sample_repository_owner">kubernetes</string>
     <string name="sample_repository_name">kubernetes</string>
     <string name="network_not_available">Network not available</string>
-    <!--    <string name="enter_a_repository_details">Enter your repository details below</string>-->
-<!--    <string name="git_details_format">#%s opened on %s by %s</string>-->
-
+    <string name="provide_repo_owner">Please enter valid repository owner</string>
+    <string name="provide_repo_name">Please enter valid repository name</string>
+    <string name="request_timed_out">Request timed out, please retry with network is available</string>
 </resources>

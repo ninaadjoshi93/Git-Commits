@@ -7,11 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ninaad.gitcommits.model.GitResponseItem
 import com.ninaad.gitcommits.repository.GitCommitsRepository
-import com.ninaad.gitcommits.repository.NetworkRequestError
 import com.ninaad.gitcommits.util.NetworkUtil
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import timber.log.Timber
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,21 +27,9 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
     private var repositoryOwner: String = ""
     private var repositoryName: String = ""
 
-    private val _showSpinner = MutableLiveData<Boolean>(false)
-    val spinner: LiveData<Boolean>
-        get() = _showSpinner
-
-    private val _showSnackBar = MutableLiveData<String?>()
-    val snackBar: LiveData<String?>
-        get() = _showSnackBar
-
-    private val _gitCommitsList = MutableLiveData<List<GitResponseItem>>()
-    val gitCommitsList: LiveData<List<GitResponseItem>>
-        get() = _gitCommitsList
-
-    fun onSnackBarShown() {
-        _showSnackBar.value = null
-    }
+    private val _uiState = MutableLiveData<UIStates>()
+    val uiState: LiveData<UIStates>
+        get() = _uiState
 
     fun isNetworkAvailable(context: Context): Boolean {
         return networkUtil.isNetworkAvailable(context)
@@ -65,42 +55,41 @@ class GitCommitsViewModel @Inject constructor(private val repository: GitCommits
 
     fun onGetGitCommitsListButtonClick() {
         if (repositoryOwner.trim().isEmpty()) {
-            _showSnackBar.value = "Please Enter Github Repository Owner"
+            _uiState.postValue(UIStates.EmptyOwner)
             return
         }
         if (repositoryName.trim().isEmpty()) {
-            _showSnackBar.value = "Please Enter Github Repository Name"
+            _uiState.postValue(UIStates.EmptyName)
             return
         }
     }
 
-    fun getGitCommitsList() {
-        launchDataLoad ({
-                val list = repository.getGitCommits(repositoryOwner, repositoryName)
-                _gitCommitsList.postValue(list)
-            }, {
-                // do nothing because error condition
-                Timber.i("called get list error")
-            })
-    }
-
-    fun clearGitCommitsList() {
-        _gitCommitsList.postValue(emptyList())
-    }
-
-    private fun launchDataLoad(complete: suspend () -> Unit, catch: suspend () -> Unit): Job {
-        return viewModelScope.launch {
-            try {
-                _showSpinner.value = true
-                complete()
-            } catch (error: NetworkRequestError) {
-                catch()
-                _showSnackBar.value = error.message
-                Timber.i(error.cause.toString())
-            } finally {
-                _showSpinner.value = false
-            }
+    fun getGitCommitsList() = viewModelScope.launch {
+        try {
+            _uiState.postValue(UIStates.InProgress)
+            val data = repository.getGitCommits(repositoryOwner, repositoryName)
+            _uiState.postValue(UIStates.Success(data))
+        } catch (timeout: TimeoutCancellationException) {
+            _uiState.postValue(UIStates.TimeOut)
+        } catch (network: IOException) {
+            _uiState.postValue(UIStates.Error(network.message ?: "Unknown Error"))
+        } catch (httpException: HttpException) {
+            _uiState.postValue(UIStates.Error(httpException.message ?: "Unknown Error"))
         }
+        finally {
+            delay(1000)
+            _uiState.postValue(UIStates.Idle)
+        }
+    }
+
+    sealed class UIStates {
+        data class Success(val list: List<GitResponseItem>): UIStates()
+        object InProgress: UIStates()
+        object TimeOut: UIStates()
+        data class Error(val errorString: String): UIStates()
+        object EmptyOwner: UIStates()
+        object EmptyName: UIStates()
+        object Idle: UIStates()
     }
 
 }
