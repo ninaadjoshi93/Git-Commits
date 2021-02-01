@@ -2,14 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ninaad.gitcommits">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
+        android:name=".application.GitApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/github_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/github_icon"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GitCommits">
-        <activity android:name=".view.MainActivity">
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ui.activity.GitCommitsActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

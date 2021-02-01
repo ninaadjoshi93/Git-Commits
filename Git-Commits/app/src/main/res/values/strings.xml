@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Git Commits</string>
+    <string name="enter_repo_owner">Repository Owner</string>
+    <string name="enter_repo_name">Repository Name</string>
+    <string name="or">OR</string>
+    <string name="my_favorite_repository">My Favorite Repository</string>
+    <string name="view_commits">View Commits</string>
+
+    <string name="name_repo_format">%s, %s</string>
+    <string name="sample_repository_owner">kubernetes</string>
+    <string name="sample_repository_name">kubernetes</string>
+    <string name="network_not_available">Network not available</string>
+    <string name="provide_repo_owner">Please enter valid repository owner</string>
+    <string name="provide_repo_name">Please enter valid repository name</string>
+    <string name="request_timed_out">Request timed out, please try again later</string>
 </resources>

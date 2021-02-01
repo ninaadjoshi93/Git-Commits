@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="gitentry"
+            type="com.ninaad.gitcommits.model.GitResponseItem"/>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="@dimen/V10dip">
+
+        <ImageView android:id="@+id/author_avatar_iv"
+            android:layout_width="@dimen/V30dip"
+            android:layout_height="@dimen/V30dip"/>
+
+        <TextView android:id="@+id/author_handle_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/author_avatar_iv"
+            android:layout_above="@+id/separator_v"
+            android:layout_marginStart="@dimen/V10dip"
+            android:text="@{gitentry.author.login}"
+            android:textStyle="bold"
+            android:textSize="@dimen/V16sp"
+            android:textColor="@color/git_font_gray" />
+
+        <TextView android:id="@+id/pull_date_updated_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/author_handle_tv"
+            android:layout_above="@+id/separator_v"
+            android:gravity="end"
+            android:text="@{`Name : ` + gitentry.commit.author.name}"
+            android:textStyle="italic"
+            android:textSize="@dimen/V16sp"
+            android:textColor="@color/git_font_gray"
+            />
+
+        <View android:id="@+id/separator_v"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/V1dip"
+            android:layout_below="@+id/author_avatar_iv"/>
+
+        <TextView android:id="@+id/commit_hash_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/V10dip"
+            android:layout_below="@+id/separator_v"
+            android:text="@{`Commit Hash : ` + gitentry.hash}"
+            android:textSize="@dimen/V16sp"
+            android:textColor="@color/dark_gray"
+            android:textStyle="italic" />
+
+        <TextView android:id="@+id/commit_message_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/V20dip"
+            android:padding="@dimen/V5dip"
+            android:layout_below="@+id/commit_hash_tv"
+            android:text="@{gitentry.commit.message}"
+            android:textStyle="bold"
+            android:textSize="@dimen/V18sp"
+            android:textColor="@color/git_font_gray"
+            android:background="@drawable/bordered_view"/>
+
+        <TextView android:id="@+id/commit_date_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/commit_message_tv"
+            android:layout_marginTop="@dimen/V10dip"
+            android:gravity="end"
+            android:textSize="@dimen/V14sp"
+            android:textColor="@color/dark_gray"
+            android:textStyle="italic" />
+
+
+
+    </RelativeLayout>
+</layout>
