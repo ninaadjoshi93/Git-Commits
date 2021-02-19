@@ -90,4 +90,7 @@ dependencies {
 
     // ViewModels dependency
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.viewmodel}"
+
+    // multidex dependency
+    implementation "androidx.multidex:multidex:${versions.multidex}"
 }

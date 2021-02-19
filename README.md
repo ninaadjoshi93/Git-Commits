@@ -32,6 +32,7 @@ Please include any unit tests you performed on this app.
 7. MockK is the testing framework to write unit tests.(Couldn't write more tests due to lack of time)
 8. Timber has been used for logging.
 9. Databinding and Viewbinding has been used.
+10. Multidex has been enabled to ensure seamless building of the app with Dagger2.
 
 # Future Improvements
 
